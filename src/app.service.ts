@@ -1,8 +1,67 @@
 import { Injectable } from '@nestjs/common';
+import { ReportType, data } from './data'
+import { v4 as uuid } from 'uuid'
+import { ReportResponseDTO } from './dtos/report.dto';
 
+interface ReportData {
+  amount: number;
+  source: string;
+}
+
+interface UpdateReportData {
+  amount?: number;
+  source?: string;
+}
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
+  getAllReports(type: ReportType): ReportResponseDTO[] {
+    return data.report.filter((report) => report.type === type);
+  }
+
+  getReportByID(type: ReportType, id: string): ReportResponseDTO {
+    const reports = data.report.filter((report) => report.type === type);
+    const report = reports.find((report) => report.id === id)
+    if (!report) return;
+    return new ReportResponseDTO(report);
+  }
+
+  createNewReport(type: ReportType, body: ReportData) {
+    const newReport = {
+      id: uuid(),
+      source: body.source,
+      amount: body.amount,
+      created_at: new Date(),
+      updated_at: new Date(),
+      type: type
+    }
+    data.report.push(newReport);
+    return newReport;
+  }
+
+  updateReport(type: ReportType, id: string, body: UpdateReportData) {
+    const report = data.report
+      .filter((report) => report.type == type)
+      .find((report) => report.id == id)
+
+    if (!report) return "Report not found";
+
+    const reportIndex = data.report.findIndex((report) => report.id === id)
+
+
+    data.report[reportIndex] = {
+      ...data.report[reportIndex],
+      ...body,
+      updated_at: new Date()
+    }
+
+    return data.report[reportIndex]
+  }
+
+  deleteReport(id: string) {
+    const reportIndex = data.report.findIndex((report) => report.id === id)
+    if (reportIndex !== -1) {
+      data.report.splice(reportIndex, 1);
+      return;
+    } else { return "Not Found" }
   }
 }
