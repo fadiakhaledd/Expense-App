@@ -24,7 +24,6 @@ export class AppController {
     @Param('id', ParseUUIDPipe) id: string): ReportResponseDTO | string {
     const reportType = type === "income" ? ReportType.INCOME : ReportType.EXPENSE;
     let report = this.appService.getReportByID(reportType, id);
-    if (!report) return "Report doesn't exist"
     return report;
   }
 

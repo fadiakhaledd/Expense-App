@@ -5,7 +5,11 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({
-    whitelist: true, // white list anything that is not in the dto
+    whitelist: true, // white list anything that is not in the dto 
+    transform:true,
+    transformOptions:{
+      enableImplicitConversion:true,
+    }, 
   }))
   await app.listen(3000);
 }
